@@ -12,6 +12,9 @@ app.use(express.json());
 app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/playdates", playdateRoutes);
+app.get("/test", (req, res) => {
+  res.send("Hello World");
+})
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   connectDB();
