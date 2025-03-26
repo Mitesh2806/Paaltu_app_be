@@ -4,32 +4,54 @@ import cloudinary from '../lib/cloudinary.js';
 import protectRoute from '../middleware/auth.middleware.js';
 
 const router = express.Router();
-
 router.post("/create", protectRoute, async(req, res) => {
     try {
-        const { title, duration, access, location, attractions, image, date } = req.body;
-        if (!title || !duration || !access || !location || !image) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
-        const uploadImageResponse = await cloudinary.uploader.upload(image);
-        const imageUrl = uploadImageResponse.secure_url;
-        const newplaydate = new Playdate({
-            title,
-            duration,
-            access,
-            date,
-            location,
-            attractions,
-            image: imageUrl,
-            poster: req.user._id
+      const { title, duration, access, location, attractions, image, date } = req.body;
+      
+      // Validate required fields
+      const requiredFields = ['title', 'duration', 'access', 'location', 'image', 'date'];
+      const missingFields = requiredFields.filter(field => !req.body[field]);
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          error: "Missing required fields",
+          missingFields 
         });
-        await newplaydate.save();
-        res.status(201).json(newplaydate);
+      }
+  
+      // Handle image upload
+      let imageUrl;
+      try {
+        const uploadImageResponse = await cloudinary.uploader.upload(image);
+        imageUrl = uploadImageResponse.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(500).json({ error: "Failed to upload image" });
+      }
+  
+      // Create new playdate
+      const newplaydate = new Playdate({
+        title,
+        duration,
+        access,
+        date: new Date(date),
+        location,
+        attractions: Array.isArray(attractions) ? attractions : [attractions],
+        image: imageUrl,
+        poster: req.user._id
+      });
+  
+      await newplaydate.save();
+      res.status(201).json(newplaydate);
+  
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
+      console.error("Error in /create:", error);
+      res.status(500).json({ 
+        error: "Internal Server Error",
+        message: error.message 
+      });
     }
-});
+  });
 
 router.get("/", protectRoute, async(req, res) => {
     try {
