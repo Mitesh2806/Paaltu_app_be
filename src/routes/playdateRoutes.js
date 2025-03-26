@@ -7,25 +7,24 @@ const router = express.Router();
 
 router.post("/create", protectRoute, async(req, res) => {
     try {
-        
-        const {title, date, access, location, attractions, image} = req.body;
-        if(!title || !date || !access || !location|| !image) {
-            return res.status(400).json({error: "All fields are required"});
+        const { title, duration, access, location, attractions, image, date } = req.body;
+        if (!title || !duration || !access || !location || !image) {
+            return res.status(400).json({ error: "All fields are required" });
         }
-       const uploadImageResponse = await cloudinary.uploader.upload(image);
-       const imageUrl = uploadImageResponse.secure_url;
-       const newplaydate = new Playdate({
-              title,
-              date,
-              access,
-              location,
-              attractions,
-              image: imageUrl,
-              poster: req.user._id
-         });
-            await newplaydate.save();
-
-            res.status(201).json(newplaydate);
+        const uploadImageResponse = await cloudinary.uploader.upload(image);
+        const imageUrl = uploadImageResponse.secure_url;
+        const newplaydate = new Playdate({
+            title,
+            duration,
+            access,
+            date,
+            location,
+            attractions,
+            image: imageUrl,
+            poster: req.user._id
+        });
+        await newplaydate.save();
+        res.status(201).json(newplaydate);
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
