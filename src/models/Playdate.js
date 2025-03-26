@@ -32,6 +32,11 @@ const playdateSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
+  participants: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: []
+  }
 },{timestamps: true});
 
 const Playdate = mongoose.model("Playdate", playdateSchema);

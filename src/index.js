@@ -16,6 +16,7 @@ job.start();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/playdates", playdateRoutes);
+app.use("/api/pets", playdateRoutes);
 app.get("/test", (req, res) => {
   res.send("Hello World");
 })
