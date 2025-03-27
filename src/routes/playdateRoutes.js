@@ -9,12 +9,7 @@ router.post("/create", protectRoute, async(req, res) => {
       const { title, duration, access, location, attractions, image, date } = req.body;
 
       
-      if (typeof duration !== 'number') {
-        return res.status(400).json({ 
-          error: "Invalid duration format",
-          message: "Duration must be a number"
-        });
-      }
+     
       
       // Validate required fields
       const requiredFields = ['title', 'duration', 'access', 'location', 'image', 'date'];

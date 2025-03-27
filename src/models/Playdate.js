@@ -38,7 +38,7 @@ const playdateSchema = new mongoose.Schema({
     default: []
   },
   duration:{
-    type: Number,
+    type: String,
     required: true
   }
 },{timestamps: true});
