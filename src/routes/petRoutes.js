@@ -13,10 +13,10 @@ router.post("/add", protectRoute, async (req, res) => {
       if (!name || !breed || !sex || !age || !weight || !image) {
         return res.status(400).json({ error: "All fields are required" });
       }
-  
+      let imageUrl
       // Upload image to Cloudinary
       const uploadImageResponse = await cloudinary.uploader.upload(image);
-      const imageUrl = uploadImageResponse.secure_url;
+     imageUrl = uploadImageResponse.secure_url;
   
       // Create the pet
       const newPet = new Pet({
