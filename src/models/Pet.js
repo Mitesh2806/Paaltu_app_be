@@ -21,13 +21,18 @@ const petSchema = new mongoose.Schema({
     type:Number,
     required: true
   },
-    image: {
+  image: {
         type: String,
     },
-    description:{
+  description:{
         type: String,
         required: true
-    }
+    },
+    poster: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
 },{timestamps: true});
 
 const Pet = mongoose.model("Pet", petSchema);
