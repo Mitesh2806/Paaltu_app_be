@@ -78,30 +78,35 @@ router.get("/:id", async(req, res) => {
     }
 });
 
-// PUT /api/playdates/:id/join
+
 router.put('/:id/join', protectRoute, async (req, res) => {
-    try {
-      const playdate = await Playdate.findById(req.params.id);
-      
-      if (!playdate) {
-        return res.status(404).json({ error: 'Playdate not found' });
-      }
-  
-      // Check if user already joined
-      if (playdate.participants.includes(req.user._id)) {
-        return res.status(400).json({ error: 'User already joined' });
-      }
-  
-      // Add user to participants
-      playdate.participants.push(req.user._id);
-      await playdate.save();
-  
-      res.json(playdate);
-    } catch (error) {
-      console.error('Error joining playdate:', error);
-      res.status(500).json({ error: 'Server error' });
+  try {
+    const playdate = await Playdate.findById(req.params.id);
+    if (!playdate) {
+      return res.status(404).json({ error: 'Playdate not found' });
     }
-  });
+
+    // Convert user ID from string to ObjectId
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    
+    // Check if user is already a participant using ObjectId comparison
+    const isParticipant = playdate.participants.some(participantId => 
+      participantId.equals(userId)
+    );
+
+    if (isParticipant) {
+      return res.status(400).json({ error: 'User already joined' });
+    }
+
+    playdate.participants.push(userId);
+    await playdate.save();
+
+    res.json(playdate);
+  } catch (error) {
+    console.error('Error joining playdate:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 router.delete("/:id", protectRoute, async(req, res) => {
     try {
