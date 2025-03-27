@@ -20,23 +20,25 @@ router.post("/add", protectRoute, async (req, res) => {
   
       // Create the pet
       const newPet = new Pet({
-        ...req.body,
-        poster: req.user._id  // Add this line to set the poster
+        name,
+        breed,
+        sex,
+        age,
+        weight,
+        image: imageUrl,
+        description,
       });
+      await newPet.save();
   
-      // Update user's pets array
-      await User.findByIdAndUpdate(
-        req.user._id,
-        { $push: { pets: newPet._id } },
-        { new: true }
-      );
+      // Add pet to the user’s pets array
+      const user = req.user; // because protectRoute sets req.user
+      user.pets.push(newPet._id);
+      await user.save();
   
       res.status(201).json(newPet);
     } catch (error) {
-      console.error('Server error:', error);
-      res.status(500).json({ 
-        error: error.message || "Internal Server Error"
-      });
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   });
   
