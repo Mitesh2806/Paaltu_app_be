@@ -23,7 +23,16 @@ const userSchema = new mongoose.Schema({
   pets:{
     type:[mongoose.Schema.Types.ObjectId],
     ref:"Pet"
+  },
+  playdates: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Playdate"
+  },
+  address:{
+    type: String,
+    required: true
   }
+
  
 },{timestamps: true});
 userSchema.pre("save", async function(next) {

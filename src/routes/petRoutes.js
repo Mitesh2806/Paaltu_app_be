@@ -8,40 +8,32 @@ const router = express.Router();
 
 router.post("/add", protectRoute, async (req, res) => {
     try {
-      const { name, breed, sex, age, weight, image, description } = req.body;
-  
-      if (!name || !breed || !sex || !age || !weight || !image) {
-        return res.status(400).json({ error: "All fields are required" });
-      }
-      let imageUrl
-      // Upload image to Cloudinary
-      const uploadImageResponse = await cloudinary.uploader.upload(image);
-     imageUrl = uploadImageResponse.secure_url;
-  
-      // Create the pet
-      const newPet = new Pet({
-        name,
-        breed,
-        sex,
-        age,
-        weight,
-        image: imageUrl,
-        description,
-      });
-      await newPet.save();
-  
-      // Add pet to the user’s pets array
-      const user = req.user; // because protectRoute sets req.user
-      user.pets.push(newPet._id);
-      await user.save();
-  
-      res.status(201).json(newPet);
+        const { name, breed, sex, age, weight, image, description } = req.body;
+       
+        if (!name || !breed || !sex || !age || !weight || !image) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+       
+        const uploadImageResponse = await cloudinary.uploader.upload(image);
+        const imageUrl = uploadImageResponse.secure_url;
+       
+        const newPet = new Pet({
+            name,
+            breed,
+            sex,
+            age,
+            weight,
+            image: imageUrl,
+            description,
+            
+        });
+        await newPet.save();
+        res.status(201).json(newPet);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-  });
-  
+});
 
 
 router.get("/:id", async (req, res) => {
