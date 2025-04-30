@@ -8,10 +8,16 @@ import { connectDB } from './lib/db.js';
 import cors from "cors";
 import job from './lib/cron.js';
 import http from 'http';
+import bodyParser from 'body-parser';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));            // accept JSON bodies up to 50 MB
+app.use(bodyParser.urlencoded({                         // accept URL-encoded bodies up to 50 MB
+  limit: '50mb',
+  extended: true
+}));
 app.use(cors());
 job.start();
 const server = http.createServer(app);
