@@ -9,10 +9,7 @@ import Playdate from '../models/Playdate.js';
 const router = express.Router();
 
 // 1️⃣ Configure Multer to store files in memory
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB max
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
 // 2️⃣ Helper: stream a buffer to Cloudinary
 function uploadBufferToCloudinary(buffer, folder = 'playdates') {
