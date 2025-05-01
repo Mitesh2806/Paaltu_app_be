@@ -22,6 +22,7 @@ app.use(cors());
 job.start();
 const server = http.createServer(app);
 const socketService = new SocketService(server);
+app.set('io', socketService.io);
 app.use("/api/auth", authRoutes);
 app.use("/api/playdates", playdateRoutes);
 app.use("/api/pets", playdateRoutes);
