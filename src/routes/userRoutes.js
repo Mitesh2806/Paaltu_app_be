@@ -36,7 +36,6 @@ async function uploadBufferToImgBB(buffer, apiKey) {
 // and text field "address". Authenticated users only.
 router.put(
   '/update',
-  protectRoute,
   upload.single('profileImage'),
   async (req, res) => {
     try {
