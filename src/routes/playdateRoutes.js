@@ -45,7 +45,7 @@ async function uploadBufferToImgBB(buffer, filename = 'playdate-image') {
 router.post(
   '/create',
   protectRoute,
-  upload.single('image'),           // expect field name "image"
+  upload.single('image'), // This will handle file uploads if present
   async (req, res) => {
     try {
       // Validate required text fields
@@ -56,15 +56,25 @@ router.post(
         return res.status(400).json({ error: 'Missing fields', missing });
       }
 
-      // Ensure file arrived
-      if (!req.file) {
-        return res.status(400).json({ error: 'Image file is required' });
+      let imageData = null;
+      
+      // OPTION 1: Handle file upload case
+      if (req.file) {
+        // Upload buffer to imgBB
+        imageData = await uploadBufferToImgBB(req.file.buffer, `playdate-${Date.now()}`);
+      } 
+      // OPTION 2: Handle direct ImgBB URLs case
+      else if (req.body.image && req.body.display_url && req.body.delete_url) {
+        imageData = {
+          url: req.body.image,
+          display_url: req.body.display_url,
+          delete_url: req.body.delete_url
+        };
+      } else {
+        return res.status(400).json({ error: 'Image is required (either as file upload or ImgBB URLs)' });
       }
 
-      // 4️⃣ Upload buffer to imgBB
-      const uploadResult = await uploadBufferToImgBB(req.file.buffer, `playdate-${Date.now()}`);
-
-      // 5️⃣ Create Playdate document
+      // Create Playdate document
       const newPlaydate = await Playdate.create({
         title,
         duration,
@@ -72,9 +82,9 @@ router.post(
         location,
         attractions: Array.isArray(attractions) ? attractions : [attractions],
         date: new Date(date),
-        image: uploadResult.url,               // Use imgBB URL
-        display_url: uploadResult.display_url, // Also store display URL
-        delete_url: uploadResult.delete_url,   // Store delete URL for future management
+        image: imageData.url,
+        display_url: imageData.display_url,
+        delete_url: imageData.delete_url,
         poster: req.user._id,
       });
 
@@ -85,7 +95,6 @@ router.post(
     }
   }
 );
-
 // 6️⃣ List all playdates
 router.get('/', protectRoute, async (req, res) => {
   try {
