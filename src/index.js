@@ -3,6 +3,7 @@ import "dotenv/config";
 import authRoutes from "./routes/authRoutes.js";
 import playdateRoutes from "./routes/playdateRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import SocketService from './services/socketService.js';
 import { connectDB } from './lib/db.js';
 import cors from "cors";
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/playdates", playdateRoutes);
 app.use("/api/pets", playdateRoutes);
 app.use('/api/chat', chatRoutes);
+app.use("/api/user", userRoutes);
 app.get("/test", (req, res) => {
   res.send("Hello World");
 })
