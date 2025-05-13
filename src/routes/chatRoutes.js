@@ -13,11 +13,9 @@ router.get('/groups', (req, res) => {
 router.post('/groups', (req, res) => {
   const { name } = req.body;
   const newGroup = {
-    _id: Date.now().toString(), 
     id: chatGroups.length + 1,
     name,
-    messages: [],
-    members: req.body.members || []
+    messages: []
   };
   chatGroups.unshift(newGroup);
   // Broadcast new group via socket
@@ -27,26 +25,18 @@ router.post('/groups', (req, res) => {
 });
 
 // Get messages for a group
-router.get('/groups/:id', (req, res) => {
-  const groupId = req.params.id;
-  const group = chatGroups.find(g => g.id === groupId);
-  if (!group) return res.status(404).json({ error: 'Group not found' });
-  res.json(group.messages);
-});
-
 router.get('/groups/:id/messages', (req, res) => {
-  const groupId = req.params.id;
-  const group = chatGroups.find(g => g._id === groupId || g.id.toString() === groupId);
-  
+  const groupId = parseInt(req.params.id, 10);
+  const group = chatGroups.find(g => g.id === groupId);
   if (!group) return res.status(404).json({ error: 'Group not found' });
   res.json(group.messages);
 });
 
 // Post a new message to a group
 router.post('/groups/:id/messages', (req, res) => {
-  const groupId = req.params.id;
+  const groupId = parseInt(req.params.id, 10);
   const { text, user, timestamp } = req.body;
-  const group = chatGroups.find(g => g.id === groupId ||  g.id.toString() === groupId );
+  const group = chatGroups.find(g => g.id === groupId);
   if (!group) return res.status(404).json({ error: 'Group not found' });
 
   const message = { id: Date.now(), text, user, timestamp };
