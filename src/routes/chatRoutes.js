@@ -46,7 +46,7 @@ router.get('/groups/:id/messages', (req, res) => {
 router.post('/groups/:id/messages', (req, res) => {
   const groupId = req.params.id;
   const { text, user, timestamp } = req.body;
-  const group = chatGroups.find(g => g.id === groupId);
+  const group = chatGroups.find(g => g.id === groupId ||  g.id.toString() === groupId );
   if (!group) return res.status(404).json({ error: 'Group not found' });
 
   const message = { id: Date.now(), text, user, timestamp };
