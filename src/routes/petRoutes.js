@@ -5,7 +5,6 @@ import protectRoute from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
-
 router.post("/add", protectRoute, async (req, res) => {
     try {
         const { name, breed, sex, age, weight, image, description } = req.body;
@@ -25,16 +24,16 @@ router.post("/add", protectRoute, async (req, res) => {
             weight,
             image: imageUrl,
             description,
-            
+            poster: req.user._id, // Add the user ID from the auth middleware
         });
+        
         await newPet.save();
         res.status(201).json(newPet);
     } catch (error) {
-        console.error(error);
+        console.error("Error adding pet:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 
 router.get("/:id", async (req, res) => {
     try {
@@ -45,11 +44,10 @@ router.get("/:id", async (req, res) => {
         }
         res.status(200).json(pet);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching pet:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 
 router.delete("/:id", protectRoute, async (req, res) => {
     try {
@@ -70,10 +68,11 @@ router.delete("/:id", protectRoute, async (req, res) => {
                 console.log("Error deleting image", deleteError);
             }
         }
+        
         await pet.deleteOne();
         res.status(200).json({ message: "Pet deleted successfully" });
     } catch (error) {
-        console.error(error);
+        console.error("Error deleting pet:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
