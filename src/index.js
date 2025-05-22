@@ -2,6 +2,7 @@ import express from 'express';
 import "dotenv/config";
 import authRoutes from "./routes/authRoutes.js";
 import playdateRoutes from "./routes/playdateRoutes.js";
+import petRoutes from "./routes/petRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import SocketService from './services/socketService.js';
@@ -26,7 +27,7 @@ const socketService = new SocketService(server);
 app.set('io', socketService.io);
 app.use("/api/auth", authRoutes);
 app.use("/api/playdates", playdateRoutes);
-app.use("/api/pets", playdateRoutes);
+app.use("/api/pets", petRoutes);
 app.use('/api/chat', chatRoutes);
 app.use("/api/user", userRoutes);
 app.get("/test", (req, res) => {
